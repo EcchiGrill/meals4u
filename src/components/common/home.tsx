@@ -11,8 +11,11 @@ export default function Home() {
   const [meals, setMeals] = useState<IMeal[]>([]);
   const [search, setSearch] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [notFound, setNotFound] = useState<boolean>(false);
 
   const searchMealHandler = async () => {
+    setMeals([]);
+    setNotFound(false);
     setIsLoading(true);
     setTimeout(async () => {
       try {
@@ -21,6 +24,10 @@ export default function Home() {
         if (response.meals) {
           setMeals(response.meals);
           setIsLoading(false);
+        }
+        if (!response.meals) {
+          setIsLoading(false);
+          setNotFound(true);
         }
       } catch (error) {
         console.log(error);
@@ -32,7 +39,12 @@ export default function Home() {
     setMeals([]);
     for (let i = 0; i < 10; i++) {
       getMealById(i + INITIAL_MEAL_ID).then((response) => {
-        setMeals((prev) => [...prev, ...response.meals]);
+        setMeals((prev) => {
+          const newMeals = response.meals.filter(
+            (meal) => !prev.some((m) => m.idMeal === meal.idMeal)
+          );
+          return [...prev, ...newMeals];
+        });
       });
     }
   };
@@ -62,14 +74,13 @@ export default function Home() {
 
         <main className="grid grid-cols-4 p-10 gap-10">
           {meals.map((meal) => (
-            <MealCard
-              key={meal.idMeal}
-              strArea={meal.strArea}
-              strMeal={meal.strMeal}
-              strCategory={meal.strCategory}
-              strMealThumb={meal.strMealThumb || "/"}
-            />
+            <MealCard key={meal.idMeal} meal={meal} />
           ))}
+          {notFound && (
+            <div className="col-span-4 text-center text-2xl font-semibold text-red-500">
+              No meals found
+            </div>
+          )}
         </main>
       </div>
     </>
