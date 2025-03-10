@@ -1,5 +1,5 @@
 import { IMeal } from "@/api/responses/meal.response";
 
-export interface IMealCardProps {
-  meal: IMeal;
+export interface FeaturedMealsState {
+  meals: IMeal[];
 }
