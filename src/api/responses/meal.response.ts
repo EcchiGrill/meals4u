@@ -53,3 +53,7 @@ export interface IMeal {
   strCreativeCommonsConfirmed: string | null;
   dateModified: string | null;
 }
+
+export interface IMealResponse {
+  meals: IMeal[];
+}
